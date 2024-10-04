@@ -5,14 +5,6 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 
-router.get('/',(req,res)=>{
-    res.send("user route")
-})
-
-router.get('/register',(req,res)=>{
-    res.send("register")
-})
-
 router.post('/register',async(req,res)=>{
     try{
         let {email,password} = req.body;
@@ -28,7 +20,7 @@ router.post('/register',async(req,res)=>{
                            password:hash,
                       })
 
-                      let token = jwt.sign({email,id:user._id},process.env.JWT_KEY)
+                      let token = jwt.sign({email,id:user._id},"fufuuf")
                       res.cookie("token",token)
                       res.send("user created successfully")
                 }
@@ -55,7 +47,7 @@ router.post('/login',async(req,res)=>{
     
     bcrypt.compare(password,user.password,(err,result)=>{
         if(result){
-            let token = jwt.sign({email,id:user._id},process.env.JWT_KEY)
+            let token = jwt.sign({email,id:user._id},"fufuuf")
             res.cookie("token",token)
             res.redirect('/Home')
         }

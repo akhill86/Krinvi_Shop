@@ -11,9 +11,11 @@ import Term from "./Component/Term";
 import FAQ from "./Component/FAQ";
 import MyAccount from "./Component/MyAccount"
 
+
 const App = ()=>{
   return (
-    <>
+  <>
+    
     <BrowserRouter>
     <Navbar/> 
     <Routes>
@@ -27,7 +29,7 @@ const App = ()=>{
     </Routes>
     <Footer/>
     </BrowserRouter>
-    </>
+  </>
   )
 }
 
