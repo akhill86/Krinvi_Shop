@@ -1,42 +1,44 @@
-// src/redux/auth/authSaga.js
 import { call, put, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
 import {
-  signupRequest,
-  signupSuccess,
-  signupFailure,
+  registerRequest,
+  registerSuccess,
+  registerFailure,
   loginRequest,
   loginSuccess,
   loginFailure,
 } from './authSlice';
 
-function* handleSignup(action) {
+// Define API calls
+const api = {
+  register: (email, password) =>
+    axios.post('http://localhost:5000/user/register', { email, password }),
+  login: (email, password) =>
+    axios.post('http://localhost:5000/user/login', { email, password }),
+};
+
+// Worker saga for registration
+function* registerSaga(action) {
   try {
-    const response = yield call(axios.post, 'http://localhost:5000/user/register', action.payload);
-    const token = response?.data?.token;
-    if (token) {
-      localStorage.setItem('token', token);
-      yield put(signupSuccess(response.data)); // response.data should include both user and token
-    }
+    const response = yield call(api.register, action.payload.email, action.payload.password);
+    yield put(registerSuccess(response.data));
   } catch (error) {
-    yield put(signupFailure(error.response?.data || 'Signup failed'));
+    yield put(registerFailure(error.response?.data?.message || 'Registration failed'));
   }
 }
 
-function* handleLogin(action) {
+// Worker saga for login
+function* loginSaga(action) {
   try {
-    const response = yield call(axios.post, 'http://localhost:5000/user/login', action.payload);
-    const token = response?.data?.token;
-    if (token) {
-      localStorage.setItem('token', token);
-      yield put(loginSuccess(response.data));
-    }
+    const response = yield call(api.login, action.payload.email, action.payload.password);
+    yield put(loginSuccess(response.data.token)); // Store token as user
   } catch (error) {
-    yield put(loginFailure(error.response?.data || 'Login failed'));
+    yield put(loginFailure(error.response?.data?.message || 'Login failed'));
   }
 }
 
-export default function* authSaga() {
-  yield takeLatest(signupRequest.type, handleSignup);
-  yield takeLatest(loginRequest.type, handleLogin);
+// Watcher saga
+export function* rootSaga() {
+  yield takeLatest(registerRequest.type, registerSaga);
+  yield takeLatest(loginRequest.type, loginSaga);
 }

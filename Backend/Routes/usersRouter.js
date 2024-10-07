@@ -33,6 +33,9 @@ router.post('/register',async(req,res)=>{
 })
 
 
+router.get('/register',(req,res)=>{
+    res.send("register route")
+})
 
 router.get('/login',(req,res)=>{
     res.send("login route")
@@ -49,7 +52,6 @@ router.post('/login',async(req,res)=>{
         if(result){
             let token = jwt.sign({email,id:user._id},"fufuuf")
             res.cookie("token",token)
-            res.redirect('/Home')
         }
         else{
             return res.send("Email or Password Incorrect")
